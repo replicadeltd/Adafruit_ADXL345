@@ -106,6 +106,13 @@ typedef enum
   ADXL345_RANGE_2_G           = 0b00    // +/- 2g (default value)
 } range_t;
 
+/* Interrupts */
+typedef enum
+{
+    ADXL345_INT2 = 0b01,
+    ADXL345_INT1 = 0b00
+} int_t;
+
 class Adafruit_ADXL345_Unified : public Adafruit_Sensor {
  public:
   Adafruit_ADXL345_Unified(int32_t sensorID = -1);
@@ -118,13 +125,26 @@ class Adafruit_ADXL345_Unified : public Adafruit_Sensor {
   dataRate_t getDataRate(void);
   bool       getEvent(sensors_event_t*);
   void       getSensor(sensor_t*);
+  void       setActivityThreshold( float threshold );
+  float      getActivityThreshold();
+  void       setActivityX( bool state );
+  void       setActivityY( bool state );
+  void       setActivityZ( bool state );
+  uint8_t    getActivity();
 
   uint8_t    getDeviceID(void);
   void       writeRegister(uint8_t reg, uint8_t value);
+  void       writeRegisterBit(uint8_t reg, uint8_t pos, bool state);
   uint8_t    readRegister(uint8_t reg);
   int16_t    read16(uint8_t reg);
 
   int16_t    getX(void), getY(void), getZ(void);
+
+  void       useInterrupt(int_t interrupt);
+
+  void       enableStandby();
+  void       enableMeasurement();
+
  private:
 
   inline uint8_t  i2cread(void);
