@@ -331,3 +331,60 @@ void Adafruit_ADXL345_Unified::getSensor(sensor_t *sensor) {
   sensor->min_value   = 156.9064F;  /*  16g = 156.9064 m/s^2  */
   sensor->resolution  = 0.03923F;   /*  4mg = 0.0392266 m/s^2 */ 
 }
+
+void Adafruit_ADXL345_Unified::setActivityThreshold( float threshold ) {
+    writeRegister( ADXL345_REG_THRESH_ACT, threshold / 0.0625f );
+}
+
+float Adafruit_ADXL345_Unified::getActivityThreshold() {
+    return (float)readRegister( ADXL345_REG_THRESH_ACT ) * 0.0625f;
+}
+
+void Adafruit_ADXL345_Unified::setActivityX( bool state ) {
+    writeRegisterBit(ADXL345_REG_ACT_INACT_CTL, 6, state);
+}
+
+void Adafruit_ADXL345_Unified::setActivityY( bool state ) {
+    writeRegisterBit(ADXL345_REG_ACT_INACT_CTL, 5, state);
+}
+
+void Adafruit_ADXL345_Unified::setActivityZ( bool state ) {
+    writeRegisterBit(ADXL345_REG_ACT_INACT_CTL, 4, state);
+}
+
+uint8_t Adafruit_ADXL345_Unified::getActivity() {
+  return readRegister( ADXL345_REG_ACT_INACT_CTL );
+}
+
+void Adafruit_ADXL345_Unified::writeRegisterBit(uint8_t reg, uint8_t pos, bool state) {
+    uint8_t value;
+    value = readRegister(reg);
+
+    if (state)
+    {
+    value |= (1 << pos);
+    } else 
+    {
+    value &= ~(1 << pos);
+    }
+
+    writeRegister(reg, value);
+}
+
+void Adafruit_ADXL345_Unified::useInterrupt(int_t interrupt) {
+    if ( interrupt == 0 ) {
+      writeRegister( ADXL345_REG_INT_MAP, 0x00 );
+    } else {
+      writeRegister(ADXL345_REG_INT_MAP, 0xFF);
+    }
+
+    writeRegister(ADXL345_REG_INT_ENABLE, 0xFF);
+}
+
+void Adafruit_ADXL345_Unified::enableMeasurement() {
+  writeRegister(ADXL345_REG_POWER_CTL, 0x08);  
+}
+
+void Adafruit_ADXL345_Unified::enableStandby() {
+  writeRegister(ADXL345_REG_POWER_CTL, 0x00);  
+}
